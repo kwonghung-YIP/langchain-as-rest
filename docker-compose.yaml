@@ -1,0 +1,14 @@
+services:
+  kafka:
+    image: apache/kafka:4.0.0
+    ports:
+      - 9092:9092
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   ports:
+  #     - 7869:7869
+  #   volumes:
+  #     - ./ollama:/root/.ollama
+  #   environment:
+  #     - OLLAMA_KEEP_ALIVE=4h
+  #     - OLLAMA_HOST=0.0.0.0
