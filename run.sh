@@ -2,7 +2,7 @@
 
 docker compose -p demo down
 
-docker compose -p demo up -d
+docker compose -p demo up -d --build
 
 KAFKA_CTR=demo-kafka-1
 

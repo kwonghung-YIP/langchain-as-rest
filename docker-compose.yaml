@@ -1,8 +1,20 @@
 services:
   kafka:
     image: apache/kafka:4.0.0
+    #container_name: kafka
     ports:
       - 9092:9092
+    environment:
+      - KAFKA_NODE_ID=1
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:29093
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_LISTENERS=PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+    post_start:
+      - command: sleep 5s && ./kafka-topics.sh --bootstrap-server localhost:9092 --create --topic simple-chat-input
+        working_dir: /opt/kafka/bin
   # ollama:
   #   image: ollama/ollama:latest
   #   ports:
@@ -12,3 +24,12 @@ services:
   #   environment:
   #     - OLLAMA_KEEP_ALIVE=4h
   #     - OLLAMA_HOST=0.0.0.0
+  langchain:
+    image: kwonghung/langchain-as-rest-backend
+    build:
+      context: langchain-backend
+
+    environment:
+      - KAFKA_BOOTSTRAP=kafka:9092
+    depends_on:
+      - kafka

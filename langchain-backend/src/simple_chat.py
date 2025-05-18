@@ -1,3 +1,5 @@
+import os
+
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 from simple_chat_agent import SimpleChatAgent
 
@@ -8,9 +10,12 @@ class SimpleChat:
     async def run(self):
         agent = SimpleChatAgent()
 
+        kafkaServer = os.getenv("KAFKA_BOOTSTRAP","localhost:9092")
+        print(f"kafka server:{kafkaServer}")
+
         self.consumer = AIOKafkaConsumer(
             self.modelId+"-input",
-            bootstrap_servers="localhost:9092",
+            bootstrap_servers=kafkaServer,
             group_id="simple-chart-model",
             enable_auto_commit=True,
             # auto_commit_interval_ms=1000*600,
@@ -19,7 +24,7 @@ class SimpleChat:
         )
 
         self.producer = AIOKafkaProducer(
-            bootstrap_servers="localhost:9092"
+            bootstrap_servers=kafkaServer
         )
 
         print("start consumer...")
