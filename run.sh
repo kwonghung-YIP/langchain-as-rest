@@ -1,10 +1,11 @@
 #!/bin/bash
 
-docker compose -p demo down
+docker compose down
 
-docker compose -p demo up -d --build
+docker compose up -d --no-start --build
+docker compose start kafka
 
-KAFKA_CTR=demo-kafka-1
+KAFKA_CTR=kafka
 
 docker exec \
     --workdir /opt/kafka/bin -it \
@@ -19,6 +20,10 @@ docker exec \
     ./kafka-topics.sh \
     --bootstrap-server localhost:9092 \
     --create --topic simple-chat-output
+
+docker compose start langchain
+
+docker compose logs langchain
 
 docker exec \
     --workdir /opt/kafka/bin -it \
