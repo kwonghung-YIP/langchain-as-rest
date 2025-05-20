@@ -1,3 +1,4 @@
+import os
 import operator
 
 from typing import TypedDict, Annotated
@@ -11,6 +12,9 @@ class State(TypedDict):
 
 class SimpleChatAgent():
     def __init__(self):
+        ollamaUrl = os.getenv("OLLAMA_BASE_URL","localhost:11434")
+        print(f"ollama base_url:{ollamaUrl}")
+
         graph = StateGraph(State)
         graph.add_node("chat",self.chatNode)
 
@@ -22,8 +26,10 @@ class SimpleChatAgent():
         self.graph = graph.compile(checkpointer=memory)
 
         self.model = ChatOllama(
+            base_url=ollamaUrl,
             model="gemma3:4b",
-            template=0.5
+            template=0.5,
+            verbose=True
         )
 
     async def chatNode(self,state:State) -> State:

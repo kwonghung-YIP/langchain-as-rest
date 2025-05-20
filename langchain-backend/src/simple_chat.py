@@ -10,7 +10,7 @@ class SimpleChat:
     async def run(self):
         agent = SimpleChatAgent()
 
-        kafkaServer = os.getenv("KAFKA_BOOTSTRAP","localhost:9092")
+        kafkaServer = os.getenv("KAFKA_BOOTSTRAP_SERVER","localhost:9092")
         print(f"kafka server:{kafkaServer}")
 
         self.consumer = AIOKafkaConsumer(

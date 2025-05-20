@@ -8,20 +8,25 @@ services:
     environment:
       - KAFKA_NODE_ID=1
       - KAFKA_PROCESS_ROLES=broker,controller
-      - KAFKA_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS=localhost:9093
+      - KAFKA_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS=kafka:9093
       - KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
       - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
-  # ollama:
-  #   image: ollama/ollama:latest
-  #   ports:
-  #     - 7869:7869
-  #   volumes:
-  #     - ./ollama:/root/.ollama
-  #   environment:
-  #     - OLLAMA_KEEP_ALIVE=4h
-  #     - OLLAMA_HOST=0.0.0.0
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    # ports:
+    #  - 11434:11434
+    volumes:
+      - ./ollama:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=4h
+      - OLLAMA_HOST=0.0.0.0
   langchain:
     image: kwonghung/langchain-as-rest-backend
     container_name: langchain
@@ -29,6 +34,9 @@ services:
       context: langchain-backend
 
     environment:
-      - KAFKA_BOOTSTRAP=kafka:9092
+      - KAFKA_BOOTSTRAP_SERVER=kafka:9092
+      # - OLLAMA_BASE_URL=http://192.168.11.134:11434
+      - OLLAMA_BASE_URL=http://ollama:11434
     depends_on:
       - kafka
+      - ollama

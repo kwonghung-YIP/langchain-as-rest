@@ -3,7 +3,7 @@
 docker compose down
 
 docker compose up -d --no-start --build
-docker compose start kafka
+docker compose start kafka ollama
 
 KAFKA_CTR=kafka
 
@@ -21,9 +21,11 @@ docker exec \
     --bootstrap-server localhost:9092 \
     --create --topic simple-chat-output
 
+docker exec -it ollama ollama pull gemma3:4b
+
 docker compose start langchain
 
-docker compose logs langchain
+# docker compose logs langchain
 
 docker exec \
     --workdir /opt/kafka/bin -it \
